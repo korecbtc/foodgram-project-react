@@ -3,7 +3,7 @@ from django.forms import ValidationError
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from users.models import User
-from djoser.serializers import UserSerializer, UserCreateSerializer
+from djoser.serializers import UserSerializer, UserCreateSerializer, TokenCreateSerializer
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -19,6 +19,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         )
 
 
+
 class CustomUserSerializer(UserSerializer):
     class Meta:
         model = User
@@ -28,6 +29,7 @@ class CustomUserSerializer(UserSerializer):
             'username',
             'first_name',
             'last_name',
+            'is_subscribed'
         )
 
 class TokenSerializer(serializers.Serializer):
