@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
 class User(AbstractUser):
     CHOICES = (
         ('user', 'user'),  ('admin', 'admin')
@@ -35,3 +36,23 @@ class User(AbstractUser):
     def is_admin(self):
         return self.role == 'admin'
 
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='follower'
+    )
+    following = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='following'
+    )
+
+    class Meta:
+        verbose_name = 'Follow'
+        unique_together = [['user', 'following']]

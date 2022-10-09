@@ -125,6 +125,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 REST_FRAMEWORK = {
     # 'DEFAULT_PERMISSION_CLASSES': [
     #     'rest_framework.permissions.IsAuthenticatedOrReadOnly', 
@@ -152,4 +154,5 @@ DJOSER = {
         'user_list': ['rest_framework.permissions.AllowAny'],
     },
     'LOGIN_FIELD': 'email',
+    'HIDE_USERS': False,
 }
