@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+from django.core.validators import MinValueValidator
 
 
 class Tag(models.Model):
@@ -34,7 +35,7 @@ class Ingredient(models.Model):
         unique=True,
         verbose_name='Name of ingredient',
         )
-    
+
     measurement_unit = models.CharField(
         max_length=256,
         blank=False,
@@ -43,7 +44,27 @@ class Ingredient(models.Model):
         )
 
     def __str__(self):
-        return self.name
+        return f'{self.name} {self.measurement_unit}'
+
+
+class IngredientRecipe(models.Model):
+    ingredients = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='ingredients_recipe'
+    )
+
+    quantity = models.IntegerField(
+        default=1,
+        validators=(MinValueValidator(
+            1, message='Min quantity is 1'
+        ),)
+    )
+
+    def __str__(self):
+        return f'{self.ingredients}'
 
 
 class Recipe(models.Model):
@@ -54,7 +75,7 @@ class Recipe(models.Model):
         verbose_name='Name of recipe',
         )
 
-    user = models.ForeignKey(
+    author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         blank=True,
@@ -63,7 +84,7 @@ class Recipe(models.Model):
     )
 
     ingredients = models.ManyToManyField(
-        Ingredient, through='IngredientRecipe', related_name='recipe'
+        IngredientRecipe, related_name='recipe'
     )
 
     tags = models.ForeignKey(
@@ -88,31 +109,18 @@ class Recipe(models.Model):
         )
 
     cooking_time = models.IntegerField(
-        verbose_name='Time of cooking in minutes'
+        verbose_name='Time of cooking in minutes',
+        validators=(MinValueValidator(
+            1, message='Min cooking time is 1 minute'
+        ),)
     )
 
     def __str__(self):
-        return self.name
+        return f'{self.name} {self.author}'
 
-
-class IngredientRecipe(models.Model):
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name='ingredient_recipe'
-    )
-
-    ingredients = models.ForeignKey(
-        Ingredient,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name='ingredient_recipe'
-    )
-
-    quantity = models.IntegerField()
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'Recipe'
 
 
 class Favotite(models.Model):
