@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Ingredient, Tag
-from .serializers import IngredientSerializer, TagSerializer
+from .models import Ingredient, Tag, Recipe
+from .serializers import IngredientSerializer, TagSerializer, RecipeSerializer
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
@@ -18,3 +18,8 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+
+
+class RecipeViewSet(viewsets.ModelViewSet):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
