@@ -32,14 +32,14 @@ class Ingredient(models.Model):
     name = models.CharField(
         max_length=256,
         blank=False,
-        unique=True,
+        unique=False,
         verbose_name='Name of ingredient',
         )
 
     measurement_unit = models.CharField(
         max_length=256,
         blank=False,
-        unique=True,
+        unique=False,
         verbose_name='Measurement_unit',
         )
 
