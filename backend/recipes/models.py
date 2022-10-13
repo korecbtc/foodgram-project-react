@@ -103,7 +103,9 @@ class Recipe(models.Model):
         IngredientRecipe, related_name='recipe'
     )
 
-    tags = models.ManyToManyField(Tag, verbose_name='tags')
+    tags = models.ManyToManyField(
+        Tag, verbose_name='tags'
+        )
 
     image = models.ImageField(
         upload_to='recipe/images/',

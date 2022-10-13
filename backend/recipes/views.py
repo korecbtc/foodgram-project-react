@@ -33,6 +33,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'is_in_shopping_cart', None
         )
         author = self.request.query_params.get('author', None)
+        tag = self.request.query_params.getlist('tags')
         if favorite == '1':
             return Recipe.objects.filter(in_favorite__user=self.request.user)
         if shopping_cart == '1':
@@ -40,6 +41,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 in_shopping_cart__user=self.request.user
             )
         if author:
-            print(author)
             return get_list_or_404(Recipe, author_id=author)
+        if tag:
+            return Recipe.objects.filter(tags__slug__in=tag)
         return super().get_queryset()
