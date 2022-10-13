@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Ingredient, Tag, Recipe
+from .models import Ingredient, Tag, Recipe, Favorite
 from .serializers import IngredientSerializer, TagSerializer, RecipeSerializer
+from api.pagination import LimitPageNumberPagination
+from django.shortcuts import get_list_or_404
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
@@ -21,5 +23,23 @@ class TagViewSet(viewsets.ModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
+    pagination_class = LimitPageNumberPagination
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+
+    def get_queryset(self):
+        favorite = self.request.query_params.get('is_favorited', None)
+        shopping_cart = self.request.query_params.get(
+            'is_in_shopping_cart', None
+        )
+        author = self.request.query_params.get('author', None)
+        if favorite == '1':
+            return Recipe.objects.filter(in_favorite__user=self.request.user)
+        if shopping_cart == '1':
+            return Recipe.objects.filter(
+                in_shopping_cart__user=self.request.user
+            )
+        if author:
+            print(author)
+            return get_list_or_404(Recipe, author_id=author)
+        return super().get_queryset()

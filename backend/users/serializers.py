@@ -19,7 +19,6 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         )
 
 
-
 class CustomUserSerializer(UserSerializer):
     class Meta:
         model = User
@@ -31,6 +30,7 @@ class CustomUserSerializer(UserSerializer):
             'last_name',
             'is_subscribed'
         )
+
 
 class TokenSerializer(serializers.Serializer):
     username = serializers.CharField()
