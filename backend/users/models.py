@@ -30,7 +30,6 @@ class User(AbstractUser):
         unique=True,
         verbose_name='Username'
     )
-    is_subscribed = models.BooleanField(default=False)
 
     @property
     def is_admin(self):

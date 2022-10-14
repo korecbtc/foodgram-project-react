@@ -23,6 +23,7 @@ class CustomUserSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
+        """Метод определяет подписан ли текущий пользователь на автора"""
         request = self.context.get('request')
         if request.user.is_anonymous or request is None:
             return False
