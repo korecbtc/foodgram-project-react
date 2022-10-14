@@ -2,7 +2,7 @@ from typing_extensions import Required
 from django.forms import ValidationError
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from users.models import User
+from users.models import User, Follow
 from djoser.serializers import UserSerializer, UserCreateSerializer, TokenCreateSerializer
 
 
@@ -20,6 +20,14 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 
 class CustomUserSerializer(UserSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request')
+        if request.user.is_anonymous or request is None:
+            return False
+        return Follow.objects.filter(user=request.user, following=obj).exists()
+
     class Meta:
         model = User
         fields = (

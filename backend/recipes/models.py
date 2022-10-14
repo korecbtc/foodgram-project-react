@@ -64,6 +64,7 @@ class Ingredient(models.Model):
 
 
 class IngredientRecipe(models.Model):
+    """Промежуточная модель. Для связи ингредиентов и количества"""
     ingredients = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
