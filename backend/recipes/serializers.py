@@ -49,7 +49,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    """Сериализирует эндпоинт /api/recipes/"""
+    """Сериализирует запросы на чтение на эндпоинт /api/recipes/"""
     image = Base64ImageField(required=False, allow_null=True)
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(many=False, read_only=True)
@@ -83,6 +83,32 @@ class RecipeSerializer(serializers.ModelSerializer):
             'is_in_shopping_cart',
             'name',
             'image',
+            'text',
+            'cooking_time'
+        )
+
+
+class RecipeCreateSerializer(serializers.ModelSerializer):
+    image = Base64ImageField(required=False, allow_null=True)
+    tags = TagSerializer(many=True, read_only=True)
+    ingredients = IngredientRecipeSerializer(many=True, read_only=True)
+
+    def to_representation(self, value):
+        data = RecipeSerializer(
+            value,
+            context={
+                'request': self.context.get('request')
+            }
+        ).data
+        return data
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'ingredients',
+            'tags',
+            'image',
+            'name',
             'text',
             'cooking_time'
         )

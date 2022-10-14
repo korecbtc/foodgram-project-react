@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from .models import Ingredient, Tag, Recipe, Favorite
-from .serializers import IngredientSerializer, TagSerializer, RecipeSerializer
+from .serializers import IngredientSerializer, TagSerializer
+from .serializers import RecipeSerializer, RecipeCreateSerializer
 from api.pagination import LimitPageNumberPagination
 from django.shortcuts import get_list_or_404
 
@@ -45,3 +46,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if tag:
             return Recipe.objects.filter(tags__slug__in=tag)
         return super().get_queryset()
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return RecipeSerializer
+        return RecipeCreateSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)

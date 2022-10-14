@@ -17,7 +17,7 @@ class RecipeAdmin(admin.ModelAdmin):
     )
 
     def show_favorite_count(self, obj):
-        return obj.in_favorite.count()
+        return obj.is_favorited.count()
 
 
 @admin.register(Ingredient)
