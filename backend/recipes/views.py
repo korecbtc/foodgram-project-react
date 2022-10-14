@@ -26,7 +26,6 @@ class TagViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = LimitPageNumberPagination
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
 
     def get_queryset(self):
         favorite = self.request.query_params.get('is_favorited', None)
