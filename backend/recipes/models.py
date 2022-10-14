@@ -72,7 +72,7 @@ class IngredientRecipe(models.Model):
         related_name='ingredients_recipe'
     )
 
-    quantity = models.IntegerField(
+    amount = models.IntegerField(
         default=1,
         validators=(MinValueValidator(
             1, message='Min quantity is 1'
@@ -148,7 +148,7 @@ class Favorite(models.Model):
         on_delete=models.CASCADE,
         blank=True,
         null=True,
-        related_name='in_favorite'
+        related_name='is_favorited'
     )
 
     class Meta:
@@ -169,7 +169,7 @@ class ShoppingCart(models.Model):
         on_delete=models.CASCADE,
         blank=False,
         null=False,
-        related_name='in_shopping_cart'
+        related_name='is_in_shopping_cart'
     )
 
     class Meta:
