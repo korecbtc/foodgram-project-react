@@ -48,15 +48,6 @@ class TagSerializer(serializers.ModelSerializer):
         )
 
 
-class TagCreateSerializer(serializers.ModelSerializer):
-    """"""
-    class Meta:
-        model = Tag
-        fields = (
-            'id'
-        )
-
-
 class RecipeSerializer(serializers.ModelSerializer):
     """Сериализирует запросы на чтение на эндпоинт /api/recipes/"""
     image = Base64ImageField(required=False, allow_null=True)
@@ -67,12 +58,14 @@ class RecipeSerializer(serializers.ModelSerializer):
     is_in_shopping_cart = serializers.SerializerMethodField()
 
     def get_is_favorited(self, obj):
+        """Если рецепт в избранных, вернет True"""
         request = self.context.get('request')
         if request.user.is_anonymous or request is None:
             return False
         return Favorite.objects.filter(user=request.user, recipe=obj).exists()
 
     def get_is_in_shopping_cart(self, obj):
+        """Если рецепт в списке покупок, вернет True"""
         request = self.context.get('request')
         if request.user.is_anonymous or request is None:
             return False
@@ -111,11 +104,13 @@ class CreateIngredientRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
+    """Служит для создания рецептов"""
     image = Base64ImageField(required=False, allow_null=True)
     tags = serializers.ListField()
     ingredients = CreateIngredientRecipeSerializer(many=True)
 
     def to_representation(self, value):
+        """Отклик на POST запрос обрабатывается другим сериализатором"""
         data = RecipeSerializer(
             value,
             context={
