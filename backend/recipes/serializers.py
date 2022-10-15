@@ -9,8 +9,8 @@ class Base64ImageField(serializers.ImageField):
     """Кастомное поле для картинки"""
     def to_internal_value(self, data):
         if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')  
-            ext = format.split('/')[-1]  
+            format, imgstr = data.split(';base64,')
+            ext = format.split('/')[-1]
             data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
 
         return super().to_internal_value(data)
@@ -45,6 +45,15 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = (
             'id', 'name', 'color', 'slug'
+        )
+
+
+class TagCreateSerializer(serializers.ModelSerializer):
+    """"""
+    class Meta:
+        model = Tag
+        fields = (
+            'id'
         )
 
 
@@ -88,10 +97,23 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
 
+class CreateIngredientRecipeSerializer(serializers.ModelSerializer):
+    """Сериализирует данные из 2ух моделей. Таким образом,
+    к ингредиентам добавляется поле "amount". Используется для POST запросов
+    на создание рецепта."""
+    id = serializers.PrimaryKeyRelatedField(
+        source='ingredients', queryset=Ingredient.objects.all()
+        )
+
+    class Meta:
+        model = IngredientRecipe
+        fields = ("id", "amount")
+
+
 class RecipeCreateSerializer(serializers.ModelSerializer):
     image = Base64ImageField(required=False, allow_null=True)
-    tags = TagSerializer(many=True, read_only=True)
-    ingredients = IngredientRecipeSerializer(many=True, read_only=True)
+    tags = serializers.ListField()
+    ingredients = CreateIngredientRecipeSerializer(many=True)
 
     def to_representation(self, value):
         data = RecipeSerializer(
@@ -101,6 +123,18 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             }
         ).data
         return data
+
+    def create(self, validated_data):
+        tag_data = validated_data.pop('tags')
+        ingredients_data = validated_data.pop('ingredients')
+        recipes = Recipe.objects.create(**validated_data)
+        recipes.tags.set(tag_data)
+        for ingredient in ingredients_data:
+            current_ingredient, status = (
+                IngredientRecipe.objects.get_or_create(**ingredient)
+            )
+            recipes.ingredients.add(current_ingredient)
+        return recipes
 
     class Meta:
         model = Recipe
