@@ -17,6 +17,7 @@ class RecipeAdmin(admin.ModelAdmin):
     )
 
     def show_favorite_count(self, obj):
+        """Счетчик добавления в избранное"""
         return obj.is_favorited.count()
 
 

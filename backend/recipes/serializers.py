@@ -5,6 +5,36 @@ from django.core.files.base import ContentFile
 from users.serializers import CustomUserSerializer
 
 
+class ShoppingCartSerializer(serializers.ModelSerializer):
+    """Сериализирует эндпоинт /api/recipes/{id}/shopping_cart/"""
+    def to_representation(self, value):
+        """Отклик на POST запрос обрабатывается другим сериализатором"""
+        data = ShoppingCartViewSerializer(
+            value,
+            context={
+                'request': self.context.get('request')
+            }
+        ).data
+        return data
+
+    class Meta:
+        model = ShoppingCart
+        fields = '__all__'
+        read_only_fields = ('user', 'recipe')
+
+
+class ShoppingCartViewSerializer(serializers.ModelSerializer):
+    """Отклик на POST запрос обрабатывается этим сериализатором"""
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time'
+        )
+
+
 class Base64ImageField(serializers.ImageField):
     """Кастомное поле для картинки"""
     def to_internal_value(self, data):
@@ -105,9 +135,9 @@ class CreateIngredientRecipeSerializer(serializers.ModelSerializer):
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
     """Служит для создания рецептов"""
-    image = Base64ImageField(required=False, allow_null=True)
-    tags = serializers.ListField()
-    ingredients = CreateIngredientRecipeSerializer(many=True)
+    image = Base64ImageField(required=True, allow_null=True)
+    tags = serializers.ListField(required=True)
+    ingredients = CreateIngredientRecipeSerializer(required=True, many=True)
 
     def to_representation(self, value):
         """Отклик на POST запрос обрабатывается другим сериализатором"""
@@ -146,8 +176,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 IngredientRecipe.objects.get_or_create(**ingredient)
             )
             recipes.ingredients.add(current_ingredient)
+        recipes.save()
         return recipes
-
 
     class Meta:
         model = Recipe
