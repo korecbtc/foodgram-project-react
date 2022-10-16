@@ -11,32 +11,24 @@ from rest_framework.decorators import api_view
 
 @api_view(['GET'])
 def download(request):
-    # ingredients = IngredientRecipe.objects.filter(
-    #         recipe__purchases__user=request.user
-    #     )
-    list_of_obj = get_list_or_404(ShoppingCart, user=request.user)
-    list_of_ingredients =[]
-    list_of_recipes = []
-    ingredients = []
-    ingredients_measure = {}
-    ingredients_amount = {}
-    count = 0
-    for shop in list_of_obj:
-        list_of_recipes.append(shop.recipe)
-
-    list_of_ingredients = (IngredientRecipe.objects.filter(recipe__in=list_of_recipes))
-    amount = list(list_of_ingredients.values_list('amount', flat=True))
-    ingredients_ids = list(list_of_ingredients.values_list('ingredients', flat=True))
-    for ingredient_id in ingredients_ids:
-        ingredient = Ingredient.objects.get(pk=ingredient_id)
-        ingredients.append(ingredient.name)
-        if ingredient.name not in ingredients_amount.keys():
-            ingredients_amount[ingredient.name] = amount[count]
-            ingredients_measure[ingredient.name] = ingredient.measurement_unit
+    ingredients = IngredientRecipe.objects.filter(
+            recipe__is_in_shopping_cart__user=request.user
+        )
+    shopping_dict = {}
+    for ingredient in ingredients:
+        amount = ingredient.amount
+        name = ingredient.ingredients.name
+        measurement_unit = ingredient.ingredients.measurement_unit
+        if name not in shopping_dict:
+            shopping_dict[name] = {
+                'amount': amount,
+                'measurement_unit': measurement_unit
+            }
         else:
-            ingredients_amount[ingredient.name] += amount[count]
-        count += 1
-    print(amount, ingredients, ingredients_amount, ingredients_measure)
+            shopping_dict[name]['amount'] += amount
+    for ingredient in shopping_dict:
+        print(ingredient, ' - ', shopping_dict[ingredient]['amount'], shopping_dict[ingredient]['measurement_unit'])
+
 
 
 class ShoppingCartViewSet(viewsets.ModelViewSet):
