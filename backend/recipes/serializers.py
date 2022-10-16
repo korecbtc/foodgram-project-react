@@ -131,6 +131,24 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             recipes.ingredients.add(current_ingredient)
         return recipes
 
+    def update(self, instance, validated_data):
+        tag_data = validated_data.pop('tags')
+        ingredients_data = validated_data.pop('ingredients')
+        instance.image = validated_data.pop('image')
+        instance.name = validated_data.pop('name')
+        instance.text = validated_data.pop('text')
+        instance.cooking_time = validated_data.pop('cooking_time')
+        recipes = instance
+        recipes.tags.set(tag_data)
+        recipes.ingredients.clear()
+        for ingredient in ingredients_data:
+            current_ingredient, status = (
+                IngredientRecipe.objects.get_or_create(**ingredient)
+            )
+            recipes.ingredients.add(current_ingredient)
+        return recipes
+
+
     class Meta:
         model = Recipe
         fields = (
