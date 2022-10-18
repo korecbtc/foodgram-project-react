@@ -129,7 +129,7 @@ class Recipe(models.Model):
     )
 
     def __str__(self):
-        return f'{self.name} {self.author}'
+        return f'{self.name}'
 
     class Meta:
         ordering = ['-id']
@@ -176,4 +176,7 @@ class ShoppingCart(models.Model):
     class Meta:
         verbose_name = 'Shopping Cart'
         unique_together = [['user', 'recipe']]
+
+    def __str__(self):
+        return f'{self.recipe.name}'
 

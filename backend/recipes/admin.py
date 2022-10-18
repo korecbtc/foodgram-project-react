@@ -5,7 +5,8 @@ from .models import ShoppingCart
 admin.site.register(Tag)
 admin.site.register(Favorite)
 admin.site.register(IngredientRecipe)
-admin.site.register(ShoppingCart)
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('author', 'name', 'tags')
@@ -22,9 +23,18 @@ class RecipeAdmin(admin.ModelAdmin):
 
 
 @admin.register(Ingredient)
-class Ingredient(admin.ModelAdmin):
+class IngredientAdmin(admin.ModelAdmin):
     list_filter = ('name',)
     list_display = (
         'name',
         'measurement_unit'
     )
+
+
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    list_display = (
+        'recipe',
+        'user'
+    )
+

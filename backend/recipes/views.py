@@ -8,14 +8,17 @@ from api.pagination import LimitPageNumberPagination
 from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.decorators import action
+from django.http import HttpResponse
 
 
 @api_view(['GET'])
-def download(request):
+def download_shopping_cart(request):
     ingredients = IngredientRecipe.objects.filter(
             recipe__is_in_shopping_cart__user=request.user
         )
     shopping_dict = {}
+    data = ''
     for ingredient in ingredients:
         amount = ingredient.amount
         name = ingredient.ingredients.name
@@ -28,24 +31,31 @@ def download(request):
         else:
             shopping_dict[name]['amount'] += amount
     for ingredient in shopping_dict:
-        print(ingredient, ' - ', shopping_dict[ingredient]['amount'], shopping_dict[ingredient]['measurement_unit'])
+        data += ingredient + ' - ' + str(
+            shopping_dict[ingredient]['amount']
+            ) + ' ' + shopping_dict[ingredient]['measurement_unit'] + '\n'
+    return HttpResponse(data, content_type='text/plain')
 
 
 class ShoppingCartViewSet(viewsets.ModelViewSet):
+    """Обработка запросов на добавление/удаление из списка покупок"""
     queryset = ShoppingCart.objects.all()
     serializer_class = ShoppingCartSerializer
 
     def perform_create(self, serializer):
         recipe = get_object_or_404(Recipe, pk=self.kwargs.get('recipes_id'))
-        print('hello')
         if not serializer.is_valid():
-            print('serializer is not valid')
             return Response(
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         serializer.save(user=self.request.user, recipe=recipe)
+
+    def destroy(self, request, recipes_id):
+        instance = get_object_or_404(ShoppingCart, recipe=recipes_id)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class IngredientViewSet(viewsets.ModelViewSet):

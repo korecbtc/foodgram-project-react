@@ -41,6 +41,9 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         my_view = self.context['view']
         object_id = my_view.kwargs.get('recipes_id')
+        if not Recipe.objects.filter(id=object_id).exists():
+            raise serializers.ValidationError({
+                'errors': 'Рецепт не найден'})
         if ShoppingCart.objects.filter(user=user,
                                        recipe=object_id).exists():
             raise serializers.ValidationError({
