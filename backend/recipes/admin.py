@@ -3,7 +3,6 @@ from .models import Tag, Ingredient, Recipe, Favorite, IngredientRecipe
 from .models import ShoppingCart
 
 admin.site.register(Tag)
-admin.site.register(Favorite)
 admin.site.register(IngredientRecipe)
 
 
@@ -38,3 +37,10 @@ class ShoppingCartAdmin(admin.ModelAdmin):
         'user'
     )
 
+
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = (
+        'recipe',
+        'user'
+    )

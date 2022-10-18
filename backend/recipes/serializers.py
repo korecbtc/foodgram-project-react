@@ -38,17 +38,30 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
     def validate(self, data):
+        request = self.context.get('request')
         user = self.context.get('request').user
         my_view = self.context['view']
         object_id = my_view.kwargs.get('recipes_id')
         if not Recipe.objects.filter(id=object_id).exists():
             raise serializers.ValidationError({
                 'errors': 'Рецепт не найден'})
-        if ShoppingCart.objects.filter(user=user,
-                                       recipe=object_id).exists():
+        if ShoppingCart.objects.filter(
+            user=user,
+            recipe=object_id
+                ).exists() and request.method == 'POST':
             raise serializers.ValidationError({
-                'errors': 'Рецепт уже добавлен в список покупок'})
+                'errors': 'Рецепт уже добавлен в список'})
+        if not ShoppingCart.objects.filter(
+            user=user,
+            recipe=object_id
+                ).exists() and request.method == 'DELETE':
+            raise serializers.ValidationError({
+                'errors': 'Рецепт не находится в списке'})
         return data
+
+
+class FavoriteSerializer(ShoppingCartSerializer):
+    pass
 
 
 class IngredientSerializer(serializers.ModelSerializer):
