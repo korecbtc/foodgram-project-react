@@ -12,27 +12,6 @@ from rest_framework.decorators import action
 from django.http import HttpResponse
 
 
-class FavoriteViewSet(viewsets.ModelViewSet):
-    """Обработка запросов на добавление/удаление из списка избранных"""
-    queryset = Favorite.objects.all()
-    serializer_class = FavoriteSerializer
-
-    def perform_create(self, serializer):
-        recipe = get_object_or_404(Recipe, pk=self.kwargs.get('recipes_id'))
-        if not serializer.is_valid():
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        serializer.save(user=self.request.user, recipe=recipe)
-
-    def destroy(self, request, recipes_id):
-        instance = get_object_or_404(Favorite, recipe=recipes_id)
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
 @api_view(['GET'])
 def download_shopping_cart(request):
     ingredients = IngredientRecipe.objects.filter(
@@ -60,8 +39,9 @@ def download_shopping_cart(request):
 
 class ShoppingCartViewSet(viewsets.ModelViewSet):
     """Обработка запросов на добавление/удаление из списка покупок"""
-    queryset = ShoppingCart.objects.all()
     serializer_class = ShoppingCartSerializer
+    main_model = ShoppingCart
+    queryset = main_model.objects.all()
 
     def perform_create(self, serializer):
         recipe = get_object_or_404(Recipe, pk=self.kwargs.get('recipes_id'))
@@ -80,11 +60,17 @@ class ShoppingCartViewSet(viewsets.ModelViewSet):
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST
             )
-        instance = ShoppingCart.objects.filter(
+        instance = self.main_model.objects.filter(
             recipe=recipes_id, user=request.user
             )
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class FavoriteViewSet(ShoppingCartViewSet):
+    """Обработка запросов на добавление/удаление из списка избранных"""
+    serializer_class = FavoriteSerializer
+    main_model = Favorite
 
 
 class IngredientViewSet(viewsets.ModelViewSet):

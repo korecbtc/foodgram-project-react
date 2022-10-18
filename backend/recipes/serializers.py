@@ -19,6 +19,7 @@ class Base64ImageField(serializers.ImageField):
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
     """Сериализирует эндпоинт /api/recipes/{id}/shopping_cart/"""
+    main_model = ShoppingCart
     id = serializers.ReadOnlyField(
         source='recipe.id',
     )
@@ -45,13 +46,13 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         if not Recipe.objects.filter(id=object_id).exists():
             raise serializers.ValidationError({
                 'errors': 'Рецепт не найден'})
-        if ShoppingCart.objects.filter(
+        if self.main_model.objects.filter(
             user=user,
             recipe=object_id
                 ).exists() and request.method == 'POST':
             raise serializers.ValidationError({
                 'errors': 'Рецепт уже добавлен в список'})
-        if not ShoppingCart.objects.filter(
+        if not self.main_model.objects.filter(
             user=user,
             recipe=object_id
                 ).exists() and request.method == 'DELETE':
@@ -61,7 +62,10 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
 
 
 class FavoriteSerializer(ShoppingCartSerializer):
-    pass
+    main_model = Favorite
+
+    class Meta(ShoppingCartSerializer.Meta):
+        model = Favorite
 
 
 class IngredientSerializer(serializers.ModelSerializer):
