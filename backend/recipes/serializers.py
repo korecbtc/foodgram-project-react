@@ -3,36 +3,7 @@ from .models import Ingredient, ShoppingCart, Tag, Recipe, IngredientRecipe, Fav
 import base64
 from django.core.files.base import ContentFile
 from users.serializers import CustomUserSerializer
-
-
-class ShoppingCartSerializer(serializers.ModelSerializer):
-    """Сериализирует эндпоинт /api/recipes/{id}/shopping_cart/"""
-    def to_representation(self, value):
-        """Отклик на POST запрос обрабатывается другим сериализатором"""
-        data = ShoppingCartViewSerializer(
-            value,
-            context={
-                'request': self.context.get('request')
-            }
-        ).data
-        return data
-
-    class Meta:
-        model = ShoppingCart
-        fields = '__all__'
-        read_only_fields = ('user', 'recipe')
-
-
-class ShoppingCartViewSerializer(serializers.ModelSerializer):
-    """Отклик на POST запрос обрабатывается этим сериализатором"""
-    class Meta:
-        model = Recipe
-        fields = (
-            'id',
-            'name',
-            'image',
-            'cooking_time'
-        )
+from rest_framework.validators import UniqueValidator
 
 
 class Base64ImageField(serializers.ImageField):
@@ -44,6 +15,37 @@ class Base64ImageField(serializers.ImageField):
             data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
 
         return super().to_internal_value(data)
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+    """Сериализирует эндпоинт /api/recipes/{id}/shopping_cart/"""
+    id = serializers.ReadOnlyField(
+        source='recipe.id',
+    )
+    name = serializers.ReadOnlyField(
+        source='recipe.name',
+    )
+    image = serializers.CharField(
+        source='recipe.image',
+        read_only=True,
+    )
+    cooking_time = serializers.ReadOnlyField(
+        source='recipe.cooking_time',
+    )
+
+    class Meta:
+        model = ShoppingCart
+        fields = ('id', 'name', 'image', 'cooking_time')
+
+    def validate(self, data):
+        user = self.context.get('request').user
+        my_view = self.context['view']
+        object_id = my_view.kwargs.get('recipes_id')
+        if ShoppingCart.objects.filter(user=user,
+                                       recipe=object_id).exists():
+            raise serializers.ValidationError({
+                'errors': 'Рецепт уже добавлен в список покупок'})
+        return data
 
 
 class IngredientSerializer(serializers.ModelSerializer):

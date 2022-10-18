@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from .models import Ingredient, Tag, Recipe, Favorite, ShoppingCart, IngredientRecipe
 from .serializers import IngredientSerializer, TagSerializer
 from .serializers import RecipeSerializer, RecipeCreateSerializer
@@ -7,6 +7,7 @@ from .serializers import ShoppingCartSerializer
 from api.pagination import LimitPageNumberPagination
 from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 @api_view(['GET'])
@@ -30,13 +31,20 @@ def download(request):
         print(ingredient, ' - ', shopping_dict[ingredient]['amount'], shopping_dict[ingredient]['measurement_unit'])
 
 
-
 class ShoppingCartViewSet(viewsets.ModelViewSet):
     queryset = ShoppingCart.objects.all()
     serializer_class = ShoppingCartSerializer
 
     def perform_create(self, serializer):
-        recipe = get_object_or_404(Recipe, pk=self.kwargs.get('recipe_id'))
+        recipe = get_object_or_404(Recipe, pk=self.kwargs.get('recipes_id'))
+        print('hello')
+        if not serializer.is_valid():
+            print('serializer is not valid')
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         serializer.save(user=self.request.user, recipe=recipe)
 
 
