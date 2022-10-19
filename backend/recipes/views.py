@@ -14,6 +14,7 @@ from django.http import HttpResponse
 
 @api_view(['GET'])
 def download_shopping_cart(request):
+    """Формирует и отдает список покупок"""
     ingredients = IngredientRecipe.objects.filter(
             recipe__is_in_shopping_cart__user=request.user
         )

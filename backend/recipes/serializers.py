@@ -18,7 +18,7 @@ class Base64ImageField(serializers.ImageField):
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
-    """Сериализирует эндпоинт /api/recipes/{id}/shopping_cart/"""
+    """Обрабатывает эндпоинт /api/recipes/{id}/shopping_cart/"""
     main_model = ShoppingCart
     id = serializers.ReadOnlyField(
         source='recipe.id',
@@ -69,7 +69,7 @@ class FavoriteSerializer(ShoppingCartSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    """Сериализирует эндпоинт /api/ingredients/"""
+    """Обрабатывает эндпоинт /api/ingredients/"""
     class Meta:
         model = Ingredient
         fields = (
@@ -78,7 +78,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
-    """Сериализирует данные из 2ух моделей. Таким образом,
+    """Обрабатывает данные из 2ух моделей. Таким образом,
     к ингредиентам добавляется поле "amount"."""
     id = serializers.ReadOnlyField(source="ingredients.id")
     name = serializers.ReadOnlyField(source="ingredients.name")
@@ -92,7 +92,7 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
-    """Сериализирует эндпоинт /api/tags/"""
+    """Обрабатывает эндпоинт /api/tags/"""
     class Meta:
         model = Tag
         fields = (
@@ -101,7 +101,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    """Сериализирует запросы на чтение на эндпоинт /api/recipes/"""
+    """Обрабатывает запросы на чтение на эндпоинт /api/recipes/"""
     image = Base64ImageField(required=False, allow_null=True)
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(many=False, read_only=True)
@@ -143,7 +143,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class CreateIngredientRecipeSerializer(serializers.ModelSerializer):
-    """Сериализирует данные из 2ух моделей. Таким образом,
+    """Обрабатывает данные для 2ух моделей. Таким образом,
     к ингредиентам добавляется поле "amount". Используется для POST запросов
     на создание рецепта."""
     id = serializers.PrimaryKeyRelatedField(

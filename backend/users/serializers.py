@@ -3,6 +3,7 @@ from django.forms import ValidationError
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from users.models import User, Follow
+from recipes.models import Recipe
 from djoser.serializers import UserSerializer, UserCreateSerializer, TokenCreateSerializer
 
 
@@ -54,3 +55,33 @@ class UserMeSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('role',)
 
+
+class RecipeShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+
+
+class FollowSerializer(CustomUserSerializer):
+    recipes = serializers.SerializerMethodField()
+
+    def get_recipes(self, obj):
+        recipes = Recipe.objects.filter(author=obj)
+        request = self.context.get('request')
+        return RecipeShortSerializer(
+            recipes, many=True,
+            context={'request': request}
+        ).data
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes'
+            # 'recipes_count'
+        )

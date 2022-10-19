@@ -35,6 +35,9 @@ class User(AbstractUser):
     def is_admin(self):
         return self.role == 'admin'
 
+    def __str__(self):
+        return f'{self.username}'
+
 
 class Follow(models.Model):
     user = models.ForeignKey(
@@ -51,6 +54,9 @@ class Follow(models.Model):
         null=True,
         related_name='following'
     )
+
+    def __str__(self):
+        return f'{self.user}'
 
     class Meta:
         verbose_name = 'Follow'
