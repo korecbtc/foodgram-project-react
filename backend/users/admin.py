@@ -6,11 +6,15 @@ from .models import User, Follow
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_filter = ('email', 'username')
+    list_display = (
+        'username',
+        'id'
+    )
 
 
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
     list_display = (
         'user',
-        'following'
+        'following',
     )

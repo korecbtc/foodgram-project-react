@@ -57,6 +57,7 @@ class UserMeSerializer(serializers.ModelSerializer):
 
 
 class RecipeShortSerializer(serializers.ModelSerializer):
+    """Вспомогательный сериализатор для FollowSerializer"""
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
@@ -64,14 +65,25 @@ class RecipeShortSerializer(serializers.ModelSerializer):
 
 class FollowSerializer(CustomUserSerializer):
     recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
 
     def get_recipes(self, obj):
-        recipes = Recipe.objects.filter(author=obj)
+        my_view = self.context['view']
+        if my_view.request.query_params.get('recipes_limit'):
+            recipes_limit = int(
+                my_view.request.query_params.get('recipes_limit')
+                )
+            recipes = obj.author_of_recipe.all()[:recipes_limit]
+        else:
+            recipes = obj.author_of_recipe.all()
         request = self.context.get('request')
         return RecipeShortSerializer(
             recipes, many=True,
             context={'request': request}
         ).data
+
+    def get_recipes_count(self, obj):
+        return obj.author_of_recipe.all().count()
 
     class Meta:
         model = User
@@ -82,6 +94,16 @@ class FollowSerializer(CustomUserSerializer):
             'first_name',
             'last_name',
             'is_subscribed',
-            'recipes'
-            # 'recipes_count'
+            'recipes',
+            'recipes_count'
+        )
+        read_only_fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count'
         )
