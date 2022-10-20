@@ -8,11 +8,14 @@ from api.pagination import LimitPageNumberPagination
 from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action, permission_classes
 from django.http import HttpResponse
+from rest_framework import permissions
+from users.permissions import OwnerOrReadOnly
 
 
 @api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, ])
 def download_shopping_cart(request):
     """Формирует и отдает список покупок"""
     ingredients = IngredientRecipe.objects.filter(
@@ -43,6 +46,7 @@ class ShoppingCartViewSet(viewsets.ModelViewSet):
     serializer_class = ShoppingCartSerializer
     main_model = ShoppingCart
     queryset = main_model.objects.all()
+    permission_classes = (permissions.IsAuthenticated, OwnerOrReadOnly)
 
     def perform_create(self, serializer):
         recipe = get_object_or_404(Recipe, pk=self.kwargs.get('recipes_id'))
@@ -72,11 +76,13 @@ class FavoriteViewSet(ShoppingCartViewSet):
     """Обработка запросов на добавление/удаление из списка избранных"""
     serializer_class = FavoriteSerializer
     main_model = Favorite
+    permission_classes = (permissions.IsAuthenticated, OwnerOrReadOnly)
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
         """Обработка GET запроса с параметром"""
@@ -84,16 +90,18 @@ class IngredientViewSet(viewsets.ModelViewSet):
         if ingredient:
             return Ingredient.objects.filter(name__startswith=ingredient)
         return super().get_queryset()
-     
+
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = LimitPageNumberPagination
     queryset = Recipe.objects.all()
+    permission_classes = (OwnerOrReadOnly,)
 
     def get_queryset(self):
         """Обработка GET запросов с параметрами"""
