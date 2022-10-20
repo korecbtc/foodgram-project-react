@@ -5,7 +5,7 @@ from .models import User, Follow
 from rest_framework.decorators import action, api_view
 from rest_framework import filters, permissions, serializers, status, viewsets
 from rest_framework.response import Response
-from api.pagination import LimitPageNumberPagination
+from .pagination import LimitPageNumberPagination
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from .permissions import OwnerOrReadOnly
@@ -27,6 +27,7 @@ class CustomUserViewSet(UserViewSet):
 
 
 class FollowViewSet(viewsets.ModelViewSet):
+    """Эндпоинт api/users/subscriptions/"""
     serializer_class = FollowSerializer
     queryset = Follow.objects.all()
     permission_classes = (permissions.IsAuthenticated, OwnerOrReadOnly)

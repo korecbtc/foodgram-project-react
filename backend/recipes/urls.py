@@ -8,8 +8,8 @@ router.register('ingredients', IngredientViewSet, basename='ingredients')
 router.register('tags', TagViewSet, basename='tags')
 router.register('recipes', RecipeViewSet, basename='recipes')
 urlpatterns = [
+    path('recipes/download_shopping_cart/', download_shopping_cart),
     path('', include(router.urls)),
-    path('recipes/download_shopping_cart', download_shopping_cart),
     path(
         'recipes/<int:recipes_id>/shopping_cart/', ShoppingCartViewSet.as_view(
             {

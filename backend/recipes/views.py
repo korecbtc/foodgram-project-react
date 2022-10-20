@@ -4,7 +4,7 @@ from .models import Ingredient, Tag, Recipe, Favorite, ShoppingCart, IngredientR
 from .serializers import IngredientSerializer, TagSerializer
 from .serializers import RecipeSerializer, RecipeCreateSerializer
 from .serializers import ShoppingCartSerializer, FavoriteSerializer
-from api.pagination import LimitPageNumberPagination
+from users.pagination import LimitPageNumberPagination
 from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -22,7 +22,8 @@ def download_shopping_cart(request):
             recipe__is_in_shopping_cart__user=request.user
         )
     shopping_dict = {}
-    data = ''
+    data = 'Проверь срок годности у молока и посмотри, не разбиты ли яйца!\n\n'
+    data += 'Ах, да, вот список покупок:\n\n'
     for ingredient in ingredients:
         amount = ingredient.amount
         name = ingredient.ingredients.name
