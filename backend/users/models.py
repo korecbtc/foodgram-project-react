@@ -33,6 +33,8 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
+        """Предусмотрена возможность использования роли администратора."""
+        """В проекте не задействована"""
         return self.role == 'admin'
 
     def __str__(self):

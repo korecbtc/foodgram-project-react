@@ -1,11 +1,8 @@
-from typing_extensions import Required
-from django.forms import ValidationError
-from rest_framework import serializers, status
-from rest_framework.validators import UniqueValidator
-from users.models import User, Follow
+from djoser.serializers import UserCreateSerializer, UserSerializer
+from rest_framework import serializers
+
 from recipes.models import Recipe
-from djoser.serializers import UserSerializer, UserCreateSerializer, TokenCreateSerializer
-from rest_framework.response import Response
+from users.models import Follow, User
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -49,6 +46,7 @@ class TokenSerializer(serializers.Serializer):
 
 
 class UserMeSerializer(serializers.ModelSerializer):
+    """Обрабатывает эндпоинт /api/users/me/"""
     class Meta:
         model = User
         fields = (
@@ -139,4 +137,3 @@ class FollowSerializer(CustomUserSerializer):
             'recipes',
             'recipes_count'
         )
-

@@ -1,17 +1,17 @@
-from django.shortcuts import render
-from rest_framework import viewsets, status
-from .models import Ingredient, Tag, Recipe, Favorite, ShoppingCart, IngredientRecipe
-from .serializers import IngredientSerializer, TagSerializer
-from .serializers import RecipeSerializer, RecipeCreateSerializer
-from .serializers import ShoppingCartSerializer, FavoriteSerializer
-from users.pagination import LimitPageNumberPagination
-from django.shortcuts import get_list_or_404, get_object_or_404
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.decorators import action, permission_classes
 from django.http import HttpResponse
-from rest_framework import permissions
+from django.shortcuts import get_list_or_404, get_object_or_404
+from rest_framework import permissions, status, viewsets
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+
+from users.pagination import LimitPageNumberPagination
 from users.permissions import OwnerOrReadOnly
+
+from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+                     ShoppingCart, Tag)
+from .serializers import (FavoriteSerializer, IngredientSerializer,
+                          RecipeCreateSerializer, RecipeSerializer,
+                          ShoppingCartSerializer, TagSerializer)
 
 
 @api_view(['GET'])

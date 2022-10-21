@@ -1,14 +1,13 @@
-from django.shortcuts import render
-from djoser.views import UserViewSet
-from .serializers import FollowSerializer, FollowCreateSerializer
-from .models import User, Follow
-from rest_framework.decorators import action, api_view
-from rest_framework import filters, permissions, serializers, status, viewsets
-from rest_framework.response import Response
-from .pagination import LimitPageNumberPagination
 from django.shortcuts import get_object_or_404
-from rest_framework import permissions
+from djoser.views import UserViewSet
+from rest_framework import permissions, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from .models import Follow, User
+from .pagination import LimitPageNumberPagination
 from .permissions import OwnerOrReadOnly
+from .serializers import FollowCreateSerializer, FollowSerializer
 
 
 class CustomUserViewSet(UserViewSet):
@@ -59,4 +58,3 @@ class FollowViewSet(viewsets.ModelViewSet):
             )
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
-

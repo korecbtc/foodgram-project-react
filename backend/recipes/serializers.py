@@ -1,9 +1,12 @@
-from rest_framework import serializers
-from .models import Ingredient, ShoppingCart, Tag, Recipe, IngredientRecipe, Favorite
 import base64
+
 from django.core.files.base import ContentFile
+from rest_framework import serializers
+
 from users.serializers import CustomUserSerializer
-from rest_framework.validators import UniqueValidator
+
+from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+                     ShoppingCart, Tag)
 
 
 class Base64ImageField(serializers.ImageField):
@@ -62,6 +65,7 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
 
 
 class FavoriteSerializer(ShoppingCartSerializer):
+    """Обрабатывает эндпоинт /api/recipes/{id}/favorite/"""
     main_model = Favorite
 
     class Meta(ShoppingCartSerializer.Meta):
