@@ -17,12 +17,18 @@ class CustomUserViewSet(UserViewSet):
     @action(
         methods=['GET'],
         detail=False,
-        serializer_class=FollowSerializer
+        serializer_class=FollowSerializer,
+        permission_classes=[permissions.IsAuthenticated]
     )
     def subscriptions(self, request):
         users = User.objects.filter(following__user=request.user)
-        serializer = self.get_serializer(users, many=True)
-        return Response(serializer.data)
+        pages = self.paginate_queryset(users)
+        serializer = FollowSerializer(
+            pages,
+            many=True,
+            context={'request': request}
+        )
+        return self.get_paginated_response(serializer.data)
 
 
 class FollowViewSet(viewsets.ModelViewSet):
@@ -30,6 +36,7 @@ class FollowViewSet(viewsets.ModelViewSet):
     serializer_class = FollowSerializer
     queryset = Follow.objects.all()
     permission_classes = (permissions.IsAuthenticated, OwnerOrReadOnly)
+    pagination_class = LimitPageNumberPagination
 
     def get_serializer_class(self):
         if self.request.method == 'GET':

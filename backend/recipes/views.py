@@ -1,5 +1,6 @@
 from django.http import HttpResponse
-from django.shortcuts import get_list_or_404, get_object_or_404
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -7,6 +8,7 @@ from rest_framework.response import Response
 from users.pagination import LimitPageNumberPagination
 from users.permissions import OwnerOrReadOnly
 
+from .filters import IngredientFilter, RecipeFilter
 from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                      ShoppingCart, Tag)
 from .serializers import (FavoriteSerializer, IngredientSerializer,
@@ -84,13 +86,8 @@ class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-    def get_queryset(self):
-        """Обработка GET запроса с параметром"""
-        ingredient = self.request.query_params.get("name", None)
-        if ingredient:
-            return Ingredient.objects.filter(name__startswith=ingredient)
-        return super().get_queryset()
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientFilter
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -103,26 +100,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = LimitPageNumberPagination
     queryset = Recipe.objects.all()
     permission_classes = (OwnerOrReadOnly,)
-
-    def get_queryset(self):
-        """Обработка GET запросов с параметрами"""
-        favorite = self.request.query_params.get('is_favorited', None)
-        shopping_cart = self.request.query_params.get(
-            'is_in_shopping_cart', None
-        )
-        author = self.request.query_params.get('author', None)
-        tag = self.request.query_params.getlist('tags')
-        if favorite == '1':
-            return Recipe.objects.filter(is_favorited__user=self.request.user)
-        if shopping_cart == '1':
-            return Recipe.objects.filter(
-                is_in_shopping_cart__user=self.request.user
-            )
-        if author:
-            return get_list_or_404(Recipe, author_id=author)
-        if tag:
-            return Recipe.objects.filter(tags__slug__in=tag)
-        return super().get_queryset()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
