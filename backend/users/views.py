@@ -13,6 +13,7 @@ from .serializers import FollowCreateSerializer, FollowSerializer
 class CustomUserViewSet(UserViewSet):
     pagination_class = LimitPageNumberPagination
     queryset = User.objects.all()
+    permission_classes = [permissions.AllowAny, ]
 
     @action(
         methods=['GET'],

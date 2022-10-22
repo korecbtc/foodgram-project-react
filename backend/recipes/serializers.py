@@ -190,7 +190,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         tag_data = validated_data.pop('tags')
         ingredients_data = validated_data.pop('ingredients')
-        instance.image = validated_data.pop('image')
+        if validated_data.get('image') is not None:
+            instance.image = validated_data.pop('image')
         instance.name = validated_data.pop('name')
         instance.text = validated_data.pop('text')
         instance.cooking_time = validated_data.pop('cooking_time')
