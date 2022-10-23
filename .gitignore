@@ -131,4 +131,8 @@ dmypy.json
 # .idea
 .idea
 
+<<<<<<< HEAD
 media/
+=======
+media/
+>>>>>>> 1d2cbe24c27c8da58a492e56ba0e7935a26313db
