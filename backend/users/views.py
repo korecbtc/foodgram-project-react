@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404
-from djoser.views import UserViewSet
+
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
+from djoser.views import UserViewSet
 
 from .models import Follow, User
 from .pagination import LimitPageNumberPagination
@@ -52,7 +54,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        serializer.save(user=self.request.user, following=following)
+        return serializer.save(user=self.request.user, following=following)
 
     def destroy(self, request, users_id):
         serializer = self.get_serializer(data=request.data)
@@ -63,6 +65,6 @@ class FollowViewSet(viewsets.ModelViewSet):
             )
         instance = Follow.objects.filter(
             following=users_id, user=request.user
-            )
+        )
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)

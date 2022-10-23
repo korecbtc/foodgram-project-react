@@ -55,3 +55,4 @@ class RecipeFilter(filters.FilterSet):
             return Recipe.objects.filter(
                 is_in_shopping_cart__user=self.request.user
             )
+        return Recipe.objects.all()

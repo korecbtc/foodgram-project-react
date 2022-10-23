@@ -1,6 +1,6 @@
-from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from recipes.models import Recipe
 from users.models import Follow, User
 
@@ -67,13 +67,12 @@ class FollowCreateSerializer(serializers.ModelSerializer):
 
     def to_representation(self, value):
         """Отклик на POST запрос обрабатывается другим сериализатором"""
-        data = FollowSerializer(
+        return FollowSerializer(
             value.following,
             context={
                 'request': self.context.get('request')
             }
         ).data
-        return data
 
     def validate(self, data):
         request = self.context.get('request')
@@ -83,13 +82,13 @@ class FollowCreateSerializer(serializers.ModelSerializer):
         if Follow.objects.filter(
             user=user,
             following=object_id
-                ).exists() and request.method == 'POST':
+        ).exists() and request.method == 'POST':
             raise serializers.ValidationError({
                 'errors': 'Пользователь уже добавлен в подписки'})
         if not Follow.objects.filter(
             user=user,
             following=object_id
-                ).exists() and request.method == 'DELETE':
+        ).exists() and request.method == 'DELETE':
             raise serializers.ValidationError({
                 'errors': 'Вы не подписаны на этого пользователя'})
         if (user.id == int(object_id)

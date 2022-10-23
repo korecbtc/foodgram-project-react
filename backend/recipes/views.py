@@ -1,19 +1,31 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
+from django_filters.rest_framework import DjangoFilterBackend
 from users.pagination import LimitPageNumberPagination
 from users.permissions import OwnerOrReadOnly
 
 from .filters import IngredientFilter, RecipeFilter
-from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                     ShoppingCart, Tag)
-from .serializers import (FavoriteSerializer, IngredientSerializer,
-                          RecipeCreateSerializer, RecipeSerializer,
-                          ShoppingCartSerializer, TagSerializer)
+from .models import (
+    Favorite,
+    Ingredient,
+    IngredientRecipe,
+    Recipe,
+    ShoppingCart,
+    Tag
+)
+from .serializers import (
+    FavoriteSerializer,
+    IngredientSerializer,
+    RecipeCreateSerializer,
+    RecipeSerializer,
+    ShoppingCartSerializer,
+    TagSerializer
+)
 
 
 @api_view(['GET'])
@@ -21,8 +33,8 @@ from .serializers import (FavoriteSerializer, IngredientSerializer,
 def download_shopping_cart(request):
     """Формирует и отдает список покупок"""
     ingredients = IngredientRecipe.objects.filter(
-            recipe__is_in_shopping_cart__user=request.user
-        )
+        recipe__is_in_shopping_cart__user=request.user
+    )
     shopping_dict = {}
     data = 'Проверь срок годности у молока и посмотри, не разбиты ли яйца!\n\n'
     data += 'Ах, да, вот список покупок:\n\n'
@@ -40,7 +52,7 @@ def download_shopping_cart(request):
     for ingredient in shopping_dict:
         data += ingredient + ' - ' + str(
             shopping_dict[ingredient]['amount']
-            ) + ' ' + shopping_dict[ingredient]['measurement_unit'] + '\n'
+        ) + ' ' + shopping_dict[ingredient]['measurement_unit'] + '\n'
     return HttpResponse(data, content_type='text/plain')
 
 
@@ -58,8 +70,7 @@ class ShoppingCartViewSet(viewsets.ModelViewSet):
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        serializer.save(user=self.request.user, recipe=recipe)
+        return serializer.save(user=self.request.user, recipe=recipe)
 
     def destroy(self, request, recipes_id):
         serializer = self.get_serializer(data=request.data)
@@ -70,7 +81,7 @@ class ShoppingCartViewSet(viewsets.ModelViewSet):
             )
         instance = self.main_model.objects.filter(
             recipe=recipes_id, user=request.user
-            )
+        )
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 

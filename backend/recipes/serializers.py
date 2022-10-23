@@ -1,12 +1,19 @@
 import base64
 
 from django.core.files.base import ContentFile
+
 from rest_framework import serializers
 
 from users.serializers import CustomUserSerializer
 
-from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                     ShoppingCart, Tag)
+from .models import (
+    Favorite,
+    Ingredient,
+    IngredientRecipe,
+    Recipe,
+    ShoppingCart,
+    Tag
+)
 
 
 class Base64ImageField(serializers.ImageField):
@@ -52,13 +59,13 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         if self.main_model.objects.filter(
             user=user,
             recipe=object_id
-                ).exists() and request.method == 'POST':
+        ).exists() and request.method == 'POST':
             raise serializers.ValidationError({
                 'errors': 'Рецепт уже добавлен в список'})
         if not self.main_model.objects.filter(
             user=user,
             recipe=object_id
-                ).exists() and request.method == 'DELETE':
+        ).exists() and request.method == 'DELETE':
             raise serializers.ValidationError({
                 'errors': 'Рецепт не находится в списке'})
         return data
@@ -88,7 +95,7 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source="ingredients.name")
     measurement_unit = serializers.ReadOnlyField(
         source="ingredients.measurement_unit"
-        )
+    )
 
     class Meta:
         model = IngredientRecipe
@@ -152,7 +159,7 @@ class CreateIngredientRecipeSerializer(serializers.ModelSerializer):
     на создание рецепта."""
     id = serializers.PrimaryKeyRelatedField(
         source='ingredients', queryset=Ingredient.objects.all()
-        )
+    )
 
     class Meta:
         model = IngredientRecipe
@@ -167,13 +174,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def to_representation(self, value):
         """Отклик на POST запрос обрабатывается другим сериализатором"""
-        data = RecipeSerializer(
+        return RecipeSerializer(
             value,
-            context={
-                'request': self.context.get('request')
-            }
+            context={'request': self.context.get('request')}
         ).data
-        return data
 
     def create(self, validated_data):
         tag_data = validated_data.pop('tags')

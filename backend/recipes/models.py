@@ -23,7 +23,7 @@ class Tag(models.Model):
         blank=False,
         unique=True,
         verbose_name='Name of tag',
-        )
+    )
 
     color = models.CharField(
         max_length=10,
@@ -35,7 +35,7 @@ class Tag(models.Model):
         max_length=256,
         blank=False,
         unique=True,
-        )
+    )
 
     class Meta:
         ordering = ['-id']
@@ -51,14 +51,14 @@ class Ingredient(models.Model):
         blank=False,
         unique=False,
         verbose_name='Name of ingredient',
-        )
+    )
 
     measurement_unit = models.CharField(
         max_length=256,
         blank=False,
         unique=False,
         verbose_name='Measurement_unit',
-        )
+    )
 
     def __str__(self):
         return f'{self.name} {self.measurement_unit}'
@@ -91,7 +91,7 @@ class Recipe(models.Model):
         blank=False,
         unique=True,
         verbose_name='Name of recipe',
-        )
+    )
 
     author = models.ForeignKey(
         User,
@@ -107,20 +107,20 @@ class Recipe(models.Model):
 
     tags = models.ManyToManyField(
         Tag, verbose_name='tags'
-        )
+    )
 
     image = models.ImageField(
         upload_to='recipe/images/',
         null=True,
         default=None
-        )
+    )
 
     text = models.CharField(
         max_length=2000,
         blank=False,
         unique=False,
         verbose_name='Description',
-        )
+    )
 
     cooking_time = models.IntegerField(
         verbose_name='Time of cooking in minutes',

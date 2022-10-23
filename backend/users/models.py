@@ -4,7 +4,7 @@ from django.db import models
 
 class User(AbstractUser):
     CHOICES = (
-        ('user', 'user'),  ('admin', 'admin')
+        ('user', 'user'), ('admin', 'admin')
     )
     first_name = models.CharField(
         max_length=150, blank=False, verbose_name='First name'
