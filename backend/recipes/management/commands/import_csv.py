@@ -6,7 +6,9 @@ from recipes.models import Ingredient
 
 from foodgram.settings import BASE_DIR
 
-PROJECT_DIR = Path(BASE_DIR).resolve().parent.joinpath('data')
+PROJECT_DIR = Path(BASE_DIR).resolve().parent.joinpath(
+    'data'
+).joinpath('backend')
 FILE_TO_OPEN = PROJECT_DIR / "ingredients.csv"
 
 
