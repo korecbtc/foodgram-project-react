@@ -9,7 +9,7 @@ services:
       - ./.env
 
   backend:
-    image: korecbtc/foodgram-backend:latest
+    image: korecbtc/foodgram_backend:latest
     restart: always
     volumes:
       - static:/app/static/
