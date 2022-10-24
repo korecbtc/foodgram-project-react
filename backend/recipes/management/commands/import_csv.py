@@ -10,7 +10,6 @@ PROJECT_DIR = Path(BASE_DIR).resolve().parent.joinpath('app').joinpath(
     'data'
 )
 FILE_TO_OPEN = PROJECT_DIR / "ingredients.csv"
-print(PROJECT_DIR)
 
 
 class Command(BaseCommand):
