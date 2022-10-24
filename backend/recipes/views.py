@@ -1,11 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-
-from django_filters.rest_framework import DjangoFilterBackend
 from users.pagination import LimitPageNumberPagination
 from users.permissions import OwnerOrReadOnly
 
