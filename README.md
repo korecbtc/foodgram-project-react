@@ -79,6 +79,7 @@ TELEGRAM_TOKEN=<токен вашего бота>
 
     ```bash
     sudo docker-compose exec backend bash
+    
     python manage.py import_csv
     ```
 
