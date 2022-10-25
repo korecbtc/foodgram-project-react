@@ -52,7 +52,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            sudo docker-compose down
+            sudo docker-compose down -v
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} > .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
