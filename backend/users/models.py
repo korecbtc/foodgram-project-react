@@ -33,8 +33,8 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        """Предусмотрена возможность использования роли администратора."""
-        """В проекте не задействована"""
+        # Предусмотрена возможность использования роли администратора.
+        # В проекте не задействована
         return self.role == 'admin'
 
     def __str__(self):
@@ -57,9 +57,9 @@ class Follow(models.Model):
         related_name='following'
     )
 
-    def __str__(self):
-        return f'{self.user}'
-
     class Meta:
         verbose_name = 'Follow'
         unique_together = [['user', 'following']]
+
+    def __str__(self):
+        return f'{self.user}'

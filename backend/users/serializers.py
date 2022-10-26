@@ -113,7 +113,7 @@ class FollowSerializer(CustomUserSerializer):
     def get_recipes(self, obj):
         request = self.context.get('request')
         limit_recipes = request.query_params.get('recipes_limit')
-        if limit_recipes is not None:
+        if limit_recipes:
             recipes = obj.author_of_recipe.all()[:(int(limit_recipes))]
         else:
             recipes = obj.author_of_recipe.all()

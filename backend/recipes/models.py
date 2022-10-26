@@ -128,12 +128,12 @@ class Recipe(models.Model):
         ),)
     )
 
-    def __str__(self):
-        return f'{self.name}'
-
     class Meta:
         ordering = ['-id']
         verbose_name = 'Recipe'
+
+    def __str__(self):
+        return f'{self.name}'
 
 
 class Favorite(models.Model):
