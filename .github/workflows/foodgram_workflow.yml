@@ -1,5 +1,5 @@
 name: Foodgram-deploy workflow
-on: [push]
+on: # [push]
 jobs:
   tests:
     runs-on: ubuntu-latest
