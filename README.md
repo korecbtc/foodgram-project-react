@@ -66,7 +66,7 @@ SSH_KEY=<ваш SSH ключ (для получения команда: cat ~/.s
 TELEGRAM_TO=<ID своего телеграм-аккаунта>
 TELEGRAM_TOKEN=<токен вашего бота>
 ```
-- Сделайте коммит и пулл в git, дождитесь выполнения всех Actions.
+- Сделайте коммит и пуш в git, дождитесь выполнения всех Actions.
 - Зайдите на боевой сервер и выполните команды:
     ```bash
     sudo docker-compose exec backend python manage.py migrate
